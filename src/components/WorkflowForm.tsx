@@ -24,7 +24,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { Workflow, WorkflowInsert, WorkflowItemInsert } from "@/types/workflow";
@@ -40,7 +44,9 @@ const workflowSchema = z.object({
   location: z.string().min(1, "Location is required."),
   estimated_cost: z.coerce.number().min(0, "Cost must be non-negative."),
   staff_allocated: z.array(z.string()).optional().nullable(),
-  status: z.enum(['Pending', 'In Progress', 'Completed', 'Invoiced']).default('Pending'),
+  status: z
+    .enum(["Pending", "In Progress", "Completed", "Invoiced"])
+    .default("Pending"),
 });
 
 type WorkflowFormValues = z.infer<typeof workflowSchema>;
@@ -67,9 +73,9 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
   isSubmitting,
   onClose,
 }) => {
-  // NOTE: Since we don't have a way to fetch initial WorkflowItems yet, 
+  // NOTE: Since we don't have a way to fetch initial WorkflowItems yet,
   // we initialize items as empty for editing existing workflows too.
-  const [workflowItems, setWorkflowItems] = useState<WorkflowItemInsert[]>([]); 
+  const [workflowItems, setWorkflowItems] = useState<WorkflowItemInsert[]>([]);
 
   const form = useForm<WorkflowFormValues>({
     resolver: zodResolver(workflowSchema),
@@ -79,7 +85,7 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
       location: initialData?.location || "",
       estimated_cost: initialData?.estimated_cost || 0,
       staff_allocated: initialData?.staff_allocated || [],
-      status: initialData?.status || 'Pending',
+      status: initialData?.status || "Pending",
     },
   });
 
@@ -96,7 +102,7 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
   const handleRemoveStaff = (staffName: string) => {
     form.setValue(
       "staff_allocated",
-      staffAllocated.filter((name) => name !== staffName),
+      staffAllocated.filter((name) => name !== staffName)
     );
   };
 
@@ -128,11 +134,14 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
                       variant={"outline"}
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
-                    >
+                        !field.value && "text-muted-foreground"
+                      )}>
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                      {field.value ? (
+                        format(field.value, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
@@ -158,8 +167,7 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
               <FormLabel>Client</FormLabel>
               <Select
                 onValueChange={field.onChange}
-                defaultValue={field.value || ""}
-              >
+                defaultValue={field.value || ""}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a client (Optional)" />
@@ -199,23 +207,25 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
             <FormItem>
               <FormLabel>Estimated Cost (R)</FormLabel>
               <FormControl>
-                <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="status"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Status</FormLabel>
-              <Select
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-              >
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -255,21 +265,19 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
             {staffAllocated.map((staff) => (
               <div
                 key={staff}
-                className="flex items-center bg-secondary text-secondary-foreground text-sm px-3 py-1 rounded-full"
-              >
+                className="flex items-center bg-secondary text-secondary-foreground text-sm px-3 py-1 rounded-full">
                 {staff}
                 <button
                   type="button"
                   onClick={() => handleRemoveStaff(staff)}
-                  className="ml-2 text-muted-foreground hover:text-foreground"
-                >
+                  className="ml-2 text-muted-foreground hover:text-foreground">
                   <X className="h-3 w-3" />
                 </button>
               </div>
             ))}
           </div>
         </FormItem>
-        
+
         <WorkflowItemManager
           items={workflowItems}
           setItems={setWorkflowItems}
@@ -281,7 +289,11 @@ const WorkflowForm: React.FC<WorkflowFormProps> = ({
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : initialData ? "Save Changes" : "Add Workflow"}
+            {isSubmitting
+              ? "Saving..."
+              : initialData
+              ? "Save Changes"
+              : "Add Workflow"}
           </Button>
         </div>
       </form>

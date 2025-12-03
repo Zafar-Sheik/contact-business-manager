@@ -15,8 +15,10 @@ interface PaymentActionsProps {
 
 const formatCurrency = (amount: number) => `R${amount.toFixed(2)}`;
 
-const PaymentActions: React.FC<PaymentActionsProps> = ({ payment, customer }) => {
-  
+const PaymentActions: React.FC<PaymentActionsProps> = ({
+  payment,
+  customer,
+}) => {
   const handlePrint = () => {
     // Placeholder for actual printing logic
     showSuccess(`Preparing Payment Receipt for printing...`);
@@ -33,9 +35,13 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({ payment, customer }) =>
       showError("Client phone number is missing. Cannot send via WhatsApp.");
       return;
     }
-    
-    const message = `Hello ${customer.customer_name}, we confirm receipt of your payment of ${formatCurrency(payment.amount)} on ${format(new Date(payment.date), 'PPP')}. Thank you!`;
-    
+
+    const message = `Hello ${
+      customer.customer_name
+    }, we confirm receipt of your payment of ${formatCurrency(
+      payment.amount
+    )} on ${format(new Date(payment.date), "PPP")}. Thank you!`;
+
     showSuccess(`Sending WhatsApp message to ${customer.phone_number}...`);
     console.log("WhatsApp Message:", message);
   };

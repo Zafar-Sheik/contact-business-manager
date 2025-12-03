@@ -11,7 +11,7 @@ export interface GrvItem {
   created_at: string;
 }
 
-export type GrvItemInsert = Omit<GrvItem, 'id' | 'grv_id' | 'created_at'>;
+export type GrvItemInsert = Omit<GrvItem, "id" | "grv_id" | "created_at">;
 
 export interface Grv {
   id: string;
@@ -25,7 +25,10 @@ export interface Grv {
   updated_at: string;
 }
 
-export type GrvInsert = Omit<Grv, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'note' | 'order_no'> & {
+export type GrvInsert = Omit<
+  Grv,
+  "id" | "user_id" | "created_at" | "updated_at" | "note" | "order_no"
+> & {
   note?: string | null;
   order_no?: string | null;
   items: GrvItemInsert[]; // For form submission
@@ -33,6 +36,7 @@ export type GrvInsert = Omit<Grv, 'id' | 'user_id' | 'created_at' | 'updated_at'
 
 // Extended Stock Item type specifically for GRV processing
 export interface StockItemForGrv extends StockItemForInvoice {
+  supplier_name: any;
   quantity_on_hand: number;
   cost_price: number;
 }

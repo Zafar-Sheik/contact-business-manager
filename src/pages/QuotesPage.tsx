@@ -19,21 +19,32 @@ import QuoteTable from "@/components/QuoteTable";
 import QuoteDetailView from "@/components/QuoteDetailView";
 
 const QuotesPage: React.FC = () => {
-  const { quotes, customers, stockItems, profile, config, isLoading, addQuote, isAdding } = useQuotes();
+  const {
+    quotes,
+    customers,
+    stockItems,
+    profile,
+    config,
+    isLoading,
+    addQuote,
+    isAdding,
+  } = useQuotes();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [selectedQuote, setSelectedQuote] = useState<Quote | undefined>(undefined);
+  const [selectedQuote, setSelectedQuote] = useState<Quote | undefined>(
+    undefined
+  );
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
   };
-  
+
   const handleOpenDetail = (quote: Quote) => {
     setSelectedQuote(quote);
     setIsDetailOpen(true);
   };
-  
+
   const handleCloseDetail = () => {
     setIsDetailOpen(false);
     setSelectedQuote(undefined);
@@ -43,9 +54,9 @@ const QuotesPage: React.FC = () => {
     addQuote(data);
     handleCloseForm();
   };
-  
+
   const getCustomerDetails = (customerId: string | null) => {
-    return customers.find(c => c.id === customerId);
+    return customers.find((c) => c.id === customerId);
   };
 
   return (
@@ -88,7 +99,7 @@ const QuotesPage: React.FC = () => {
           onViewDetails={handleOpenDetail}
         />
       </div>
-      
+
       {/* Quote Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent className="sm:max-w-[650px] max-h-[90vh] overflow-y-auto">

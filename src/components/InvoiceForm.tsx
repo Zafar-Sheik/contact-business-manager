@@ -24,11 +24,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { Invoice, InvoiceInsert, InvoiceItemInsert, Customer, StockItemForInvoice } from "@/types/invoice";
+import {
+  Invoice,
+  InvoiceInsert,
+  InvoiceItemInsert,
+  Customer,
+  StockItemForInvoice,
+} from "@/types/invoice";
 import InvoiceItemManager from "./InvoiceItemManager";
 import {
   AlertDialog,
@@ -47,7 +57,9 @@ const invoiceSchema = z.object({
   date: z.date({ required_error: "Date is required." }),
   customer_id: z.string().min(1, "Client is required."),
   work_scope: z.string().nullable().optional(),
-  is_vat_invoice: z.enum(["true", "false"], { required_error: "VAT status is required." }),
+  is_vat_invoice: z.enum(["true", "false"], {
+    required_error: "VAT status is required.",
+  }),
 });
 
 type InvoiceFormValues = z.infer<typeof invoiceSchema>;
@@ -72,7 +84,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   nextInvoiceNo,
 }) => {
   const { fetchInvoiceItems } = useInvoices();
-  const [invoiceItems, setInvoiceItems] = useState<InvoiceItemInsert[]>([]); 
+  const [invoiceItems, setInvoiceItems] = useState<InvoiceItemInsert[]>([]);
   const [isConfirmingUpdate, setIsConfirmingUpdate] = useState(false);
   const [pendingData, setPendingData] = useState<InvoiceInsert | null>(null);
 
@@ -86,25 +98,27 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       is_vat_invoice: initialData?.is_vat_invoice ? "true" : "false",
     },
   });
-  
+
   const isVatInvoice = form.watch("is_vat_invoice") === "true";
-  
+
   // Effect to load items if editing
   useEffect(() => {
     if (initialData) {
       // Load items for editing
-      fetchInvoiceItems(initialData.id).then(items => {
-        const inserts: InvoiceItemInsert[] = items.map(item => ({
-          stock_item_id: item.stock_item_id,
-          description: item.description,
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          vat_rate: item.vat_rate,
-        }));
-        setInvoiceItems(inserts);
-      }).catch(error => {
-        console.error("Failed to load invoice items:", error);
-      });
+      fetchInvoiceItems(initialData.id)
+        .then((items) => {
+          const inserts: InvoiceItemInsert[] = items.map((item) => ({
+            stock_item_id: item.stock_item_id,
+            description: item.description,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            vat_rate: item.vat_rate,
+          }));
+          setInvoiceItems(inserts);
+        })
+        .catch((error) => {
+          console.error("Failed to load invoice items:", error);
+        });
     } else {
       setInvoiceItems([]);
     }
@@ -124,17 +138,17 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       alert("Please add at least one item to the invoice.");
       return;
     }
-    
+
     const data: InvoiceInsert = {
       invoice_no: values.invoice_no,
       date: format(values.date, "yyyy-MM-dd"),
       customer_id: values.customer_id,
       work_scope: values.work_scope || null,
       items: invoiceItems,
-      status: initialData?.status || 'Draft', // Preserve status if editing
+      status: initialData?.status || "Draft", // Preserve status if editing
       is_vat_invoice: values.is_vat_invoice === "true",
     };
-    
+
     if (initialData) {
       // Editing existing invoice: trigger confirmation
       setPendingData(data);
@@ -144,15 +158,15 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
       handleFinalSubmit(data);
     }
   };
-  
+
   const handleConfirmUpdate = (toolsReturned: boolean) => {
     if (pendingData) {
-      // If tools returned is No, we might want to adjust the status or add a note, 
-      // but for now, we proceed with the update regardless of the answer, 
+      // If tools returned is No, we might want to adjust the status or add a note,
+      // but for now, we proceed with the update regardless of the answer,
       // as the user only requested the question.
-      
+
       // If we wanted to enforce 'No' prevents update, we would stop here.
-      
+
       handleFinalSubmit(pendingData);
       setPendingData(null);
     }
@@ -162,16 +176,24 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
   return (
     <>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+        <form
+          onSubmit={form.handleSubmit(handleFormSubmit)}
+          className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="invoice_no"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Invoice No. {initialData ? "" : "(Auto-Generated)"}</FormLabel>
+                  <FormLabel>
+                    Invoice No. {initialData ? "" : "(Auto-Generated)"}
+                  </FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={!!initialData} className={cn(!!initialData && "bg-muted/50")} />
+                    <Input
+                      {...field}
+                      disabled={!!initialData}
+                      className={cn(!!initialData && "bg-muted/50")}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,11 +212,14 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                           variant={"outline"}
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !field.value && "text-muted-foreground",
-                          )}
-                        >
+                            !field.value && "text-muted-foreground"
+                          )}>
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -221,8 +246,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <FormLabel>Client</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                  defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a client" />
@@ -240,7 +264,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="is_vat_invoice"
@@ -249,8 +273,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
                 <FormLabel>Invoice Type</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                  defaultValue={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select invoice type" />
@@ -273,13 +296,17 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
               <FormItem>
                 <FormLabel>Work Scope / Description</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Brief description of work done..." {...field} value={field.value || ""} />
+                  <Textarea
+                    placeholder="Brief description of work done..."
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          
+
           <InvoiceItemManager
             items={invoiceItems}
             setItems={setInvoiceItems}
@@ -305,20 +332,30 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
           </div>
         </form>
       </Form>
-      
+
       {/* Confirmation Dialog for Updates */}
-      <AlertDialog open={isConfirmingUpdate} onOpenChange={setIsConfirmingUpdate}>
+      <AlertDialog
+        open={isConfirmingUpdate}
+        onOpenChange={setIsConfirmingUpdate}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Invoice Update</AlertDialogTitle>
             <AlertDialogDescription>
-              <span className="font-bold text-lg text-red-600">IS ALL TOOLS RETURNED BACK?</span>
-              <p className="mt-2">Confirming this action will save the invoice changes.</p>
+              <span className="font-bold text-lg text-red-600">
+                IS ALL TOOLS RETURNED BACK?
+              </span>
+              <p className="mt-2">
+                Confirming this action will save the invoice changes.
+              </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => handleConfirmUpdate(false)}>No</AlertDialogCancel>
-            <AlertDialogAction onClick={() => handleConfirmUpdate(true)}>Yes</AlertDialogAction>
+            <AlertDialogCancel onClick={() => handleConfirmUpdate(false)}>
+              No
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => handleConfirmUpdate(true)}>
+              Yes
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

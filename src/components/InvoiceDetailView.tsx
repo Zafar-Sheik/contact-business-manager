@@ -43,22 +43,27 @@ const InvoiceDetailView: React.FC<InvoiceDetailViewProps> = ({
     queryKey: ["invoiceItems", invoice.id],
     queryFn: () => fetchInvoiceItems(invoice.id),
   });
-  
+
   // Conditional logic for logo display: Hide if it's a non-VAT invoice, regardless of config setting.
-  const showLogo = invoice.is_vat_invoice && appConfig?.document_layout_config?.show_logo_on_documents && companyProfile?.logodataurl;
+  const showLogo =
+    invoice.is_vat_invoice &&
+    appConfig?.document_layout_config?.show_logo_on_documents &&
+    companyProfile?.logodataurl;
   const companyName = companyProfile?.name || "Company Name Missing";
-  
+
   // Select banking details based on invoice type
-  const bankingDetails = invoice.is_vat_invoice ? {
-    bank_name: companyProfile?.bank_name,
-    account_number: companyProfile?.account_number,
-    branch_code: companyProfile?.branch_code,
-  } : {
-    bank_name: companyProfile?.non_vat_bank_name,
-    account_number: companyProfile?.non_vat_account_number,
-    branch_code: companyProfile?.non_vat_branch_code,
-  };
-  
+  const bankingDetails = invoice.is_vat_invoice
+    ? {
+        bank_name: companyProfile?.bank_name,
+        account_number: companyProfile?.account_number,
+        branch_code: companyProfile?.branch_code,
+      }
+    : {
+        bank_name: companyProfile?.non_vat_bank_name,
+        account_number: companyProfile?.non_vat_account_number,
+        branch_code: companyProfile?.non_vat_branch_code,
+      };
+
   const showBanking = bankingDetails.bank_name && bankingDetails.account_number;
 
   if (isItemsLoading) {
@@ -74,9 +79,9 @@ const InvoiceDetailView: React.FC<InvoiceDetailViewProps> = ({
       {/* Document Header (Company Info) */}
       <div className="flex justify-between items-start border-b pb-4">
         {showLogo ? (
-          <img 
-            src={companyProfile.logodataurl!} 
-            alt={companyName} 
+          <img
+            src={companyProfile.logodataurl!}
+            alt={companyName}
             className="max-h-16 w-auto object-contain"
           />
         ) : (
@@ -92,11 +97,26 @@ const InvoiceDetailView: React.FC<InvoiceDetailViewProps> = ({
         <div>
           <h3 className="text-lg font-semibold mb-1">Bill To:</h3>
           <p className="font-medium">{customer?.customer_name || "N/A"}</p>
-          <p className="text-sm text-muted-foreground">{customer?.phone_number || "N/A"}</p>
+          <p className="text-sm text-muted-foreground">
+            {customer?.phone_number || "N/A"}
+          </p>
         </div>
         <div className="text-right text-sm">
-          <p>Date: <span className="font-medium">{format(new Date(invoice.date), "PPP")}</span></p>
-          <Badge variant={invoice.status === 'Paid' ? 'default' : invoice.status === 'Cancelled' ? 'destructive' : 'secondary'} className="mt-2">
+          <p>
+            Date:{" "}
+            <span className="font-medium">
+              {format(new Date(invoice.date), "PPP")}
+            </span>
+          </p>
+          <Badge
+            variant={
+              invoice.status === "Paid"
+                ? "default"
+                : invoice.status === "Cancelled"
+                ? "destructive"
+                : "secondary"
+            }
+            className="mt-2">
             {invoice.status}
           </Badge>
         </div>
@@ -124,7 +144,9 @@ const InvoiceDetailView: React.FC<InvoiceDetailViewProps> = ({
           <TableBody>
             {items?.map((item) => (
               <TableRow key={item.id}>
-                <TableCell className="font-medium">{item.description}</TableCell>
+                <TableCell className="font-medium">
+                  {item.description}
+                </TableCell>
                 <TableCell className="text-right">{item.quantity}</TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(item.unit_price)}
@@ -143,11 +165,15 @@ const InvoiceDetailView: React.FC<InvoiceDetailViewProps> = ({
         <div className="w-full max-w-xs space-y-1 text-sm">
           <div className="flex justify-between">
             <span>Subtotal:</span>
-            <span className="font-medium">{formatCurrency(invoice.subtotal)}</span>
+            <span className="font-medium">
+              {formatCurrency(invoice.subtotal)}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>VAT Amount:</span>
-            <span className="font-medium">{formatCurrency(invoice.vat_amount)}</span>
+            <span className="font-medium">
+              {formatCurrency(invoice.vat_amount)}
+            </span>
           </div>
           <Separator />
           <div className="flex justify-between text-lg font-bold pt-1">
@@ -156,16 +182,17 @@ const InvoiceDetailView: React.FC<InvoiceDetailViewProps> = ({
           </div>
         </div>
       </div>
-      
+
       <Separator />
-      
+
       {/* Document Messages & Banking */}
       {(showBanking || appConfig?.slipmessage1) && (
         <div className="text-xs text-muted-foreground space-y-1 pt-2">
           {showBanking && (
             <p className="font-semibold">
               {invoice.is_vat_invoice ? "VAT Account: " : "Non-VAT Account: "}
-              {bankingDetails.bank_name} | Acc: {bankingDetails.account_number} | Branch: {bankingDetails.branch_code}
+              {bankingDetails.bank_name} | Acc: {bankingDetails.account_number}{" "}
+              | Branch: {bankingDetails.branch_code}
             </p>
           )}
           {appConfig?.slipmessage1 && <p>{appConfig.slipmessage1}</p>}

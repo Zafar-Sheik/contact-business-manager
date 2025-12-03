@@ -13,8 +13,10 @@ interface InvoiceActionsProps {
 
 const formatCurrency = (amount: number) => `R${amount.toFixed(2)}`;
 
-const InvoiceActions: React.FC<InvoiceActionsProps> = ({ invoice, customer }) => {
-  
+const InvoiceActions: React.FC<InvoiceActionsProps> = ({
+  invoice,
+  customer,
+}) => {
   const handlePrint = () => {
     // Placeholder for actual printing logic
     showSuccess(`Preparing Invoice ${invoice.invoice_no} for printing...`);
@@ -32,23 +34,27 @@ const InvoiceActions: React.FC<InvoiceActionsProps> = ({ invoice, customer }) =>
       showError("Client phone number is missing. Cannot send via WhatsApp.");
       return;
     }
-    
+
     // Clean up phone number (remove spaces, dashes, etc.) and ensure international format if necessary
-    // Assuming South African numbers might need a country code if not already present, 
+    // Assuming South African numbers might need a country code if not already present,
     // but for simplicity, we just clean non-numeric characters.
-    const cleanedPhoneNumber = customer.phone_number.replace(/[^0-9+]/g, '');
-    
+    const cleanedPhoneNumber = customer.phone_number.replace(/[^0-9+]/g, "");
+
     // Construct the message
-    const message = `Hello ${customer.customer_name}, your invoice ${invoice.invoice_no} for ${formatCurrency(invoice.total_amount)} is ready. Please find the attached PDF (or link placeholder).`;
-    
+    const message = `Hello ${customer.customer_name}, your invoice ${
+      invoice.invoice_no
+    } for ${formatCurrency(
+      invoice.total_amount
+    )} is ready. Please find the attached PDF (or link placeholder).`;
+
     // Encode the message for the URL
     const encodedMessage = encodeURIComponent(message);
-    
+
     // Construct the WhatsApp URL (wa.me)
     const whatsappUrl = `https://wa.me/${cleanedPhoneNumber}?text=${encodedMessage}`;
-    
+
     // Open the link in a new tab
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl, "_blank");
 
     showSuccess(`Opening WhatsApp chat for ${customer.customer_name}.`);
   };
